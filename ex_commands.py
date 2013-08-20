@@ -6,11 +6,12 @@ import os
 
 # We use several commands implemented in Vintange, so make it available here.
 sys.path.append(os.path.join(sublime.packages_path(), 'Vintage'))
+sys.path.append(os.path.dirname(__file__))
 
 import re
 import subprocess
 
-from vintage import g_registers
+from Vintage.vintage import g_registers
 
 from plat.windows import get_oem_cp
 from plat.windows import get_startup_info
@@ -149,7 +150,7 @@ class ExShell(sublime_plugin.TextCommand):
             try:
                 self.open_shell([term, '-e', 'bash']).wait()
             except Exception as e:
-                print e
+                print(e)
                 sublime.status_message("VintageEx: Error while executing command through shell.")
                 return
         elif sublime.platform() == 'osx':
@@ -161,7 +162,7 @@ class ExShell(sublime_plugin.TextCommand):
             try:
                 self.open_shell([term, '-e', 'bash']).wait()
             except Exception as e:
-                print e
+                print(e)
                 sublime.status_message("VintageEx: Error while executing command through shell.")
                 return
         elif sublime.platform() == 'windows':
@@ -194,7 +195,7 @@ class ExReadShellOut(sublime_plugin.TextCommand):
                         p = subprocess.Popen([the_shell, '-c', name],
                                                             stdout=subprocess.PIPE)
                     except Exception as e:
-                        print e
+                        print(e)
                         sublime.status_message("VintageEx: Error while executing command through shell.")
                         return
                     self.view.insert(edit, s.begin(), p.communicate()[0][:-1])
@@ -352,7 +353,7 @@ class ExFile(sublime_plugin.TextCommand):
             lines = self.view.rowcol(self.view.size())[0] + 1
 
         # fixme: doesn't calculate the buffer's % correctly
-        if not isinstance(lines, basestring):
+        if not isinstance(lines, str):
             vr = self.view.visible_region()
             start_row, end_row = self.view.rowcol(vr.begin())[0], \
                                               self.view.rowcol(vr.end())[0]
@@ -362,7 +363,7 @@ class ExFile(sublime_plugin.TextCommand):
         msg = fname
         if attrs:
             msg += " [%s]" % attrs
-        if isinstance(lines, basestring):
+        if isinstance(lines, str):
             msg += " -- %s --"  % lines
         else:
             msg += " %d line(s) --%d%%--" % (lines, int(percent))
@@ -478,9 +479,9 @@ class ExSubstitute(sublime_plugin.TextCommand):
         else:
             try:
                 parts = parsers.s_cmd.split(pattern)
-            except SyntaxError, e:
+            except SyntaxError as e:
                 sublime.status_message("VintageEx: (substitute) %s" % e)
-                print "VintageEx: (substitute) %s" % e
+                print("VintageEx: (substitute) %s" % e)
                 return
             else:
                 if len(parts) == 4:
@@ -505,9 +506,9 @@ class ExSubstitute(sublime_plugin.TextCommand):
         computed_flags |= re.IGNORECASE if (flags and 'i' in flags) else 0
         try:
             pattern = re.compile(pattern, flags=computed_flags)
-        except Exception, e:
+        except Exception as e:
             sublime.status_message("VintageEx [regex error]: %s ... in pattern '%s'" % (e.message, pattern))
-            print "VintageEx [regex error]: %s ... in pattern '%s'" % (e.message, pattern)
+            print("VintageEx [regex error]: %s ... in pattern '%s'" % (e.message, pattern))
             return
 
         replace_count = 0 if (flags and 'g' in flags) else 1
@@ -578,7 +579,7 @@ class ExGlobal(sublime_plugin.TextCommand):
         except ValueError:
             msg = "VintageEx: Bad :global pattern. (%s)" % pattern
             sublime.status_message(msg)
-            print msg
+            print(msg)
             return
 
         if global_pattern:
@@ -595,10 +596,10 @@ class ExGlobal(sublime_plugin.TextCommand):
         for r in rs:
             try:
                 match = re.search(global_pattern, self.view.substr(r))
-            except Exception, e:
+            except Exception as e:
                 msg = "VintageEx (global): %s ... in pattern '%s'" % (str(e), global_pattern)
                 sublime.status_message(msg)
-                print msg
+                print(msg)
                 return
             if (match and not forced) or (not match and forced):
                 GLOBAL_RANGES.append(r)
@@ -756,14 +757,14 @@ class ExListRegisters(sublime_plugin.TextCommand):
         if not g_registers:
             sublime.status_message('VintageEx: no registers.')
         self.view.window().show_quick_panel(
-            ['"{0}   {1}'.format(k, v) for k, v in g_registers.items()],
+            ['"{0}   {1}'.format(k, v) for k, v in list(g_registers.items())],
             self.on_done)
 
     def on_done(self, idx):
         """Save selected value to `"` register."""
         if idx == -1:
             return
-        g_registers['"'] = g_registers.values()[idx]
+        g_registers['"'] = list(g_registers.values())[idx]
 
 
 class ExNew(sublime_plugin.TextCommand):

@@ -333,7 +333,7 @@ EX_COMMANDS = {
 
 
 def find_command(cmd_name):
-    partial_matches = [name for name in EX_COMMANDS.keys()
+    partial_matches = [name for name in list(EX_COMMANDS.keys())
                                             if name[0].startswith(cmd_name)]
     if not partial_matches: return None
     full_match = [(ln, sh) for (ln, sh) in partial_matches
@@ -369,7 +369,7 @@ def parse_command(cmd):
         if found_args:
             found_args = found_args.groupdict()
             # get rid of unset arguments so they don't clobber defaults
-            found_args = dict((k, v) for k, v in found_args.iteritems()
+            found_args = dict((k, v) for k, v in found_args.items()
                                                         if v is not None)
             cmd_args.update(found_args)
             break

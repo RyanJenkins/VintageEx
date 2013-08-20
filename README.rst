@@ -2,7 +2,7 @@
 VintageEx
 =========
 
-A rendition of Vim's command-line mode for Sublime Text 2.
+A (hacky patch on top of a) rendition of Vim's command-line mode for Sublime Text ~~2~~3.
 
 License
 =======

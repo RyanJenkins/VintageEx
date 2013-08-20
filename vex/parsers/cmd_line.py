@@ -191,7 +191,7 @@ class CommandLineParser(ParserBase):
     def parse_cmd_line(self):
         try:
             rng = self.range_parser.parse_full_range()
-        except SyntaxError, e:
+        except SyntaxError as e:
             rng = None
             self.result["errors"].append(str(e))
             return self.result

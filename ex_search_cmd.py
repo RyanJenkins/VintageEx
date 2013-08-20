@@ -5,6 +5,11 @@
 import sublime
 import sublime_plugin
 
+import os, sys
+
+print(os.path.dirname(__file__))
+sys.path.append(os.path.dirname(__file__))
+
 from vex import ex_location
 import ex_commands
 
@@ -94,8 +99,8 @@ class SearchImpl(object):
         if next_match:
             self.view.sel().clear()
             if not self.remember:
-                self.view.add_regions("vi_search", [next_match], "search.vi",
-                                      sublime.DRAW_OUTLINED)
+                self.view.add_regions("vi_search", [next_match], "search.vi", 
+                    "", sublime.DRAW_OUTLINED)
             else:
                 self.view.sel().add(next_match)
             self.view.show(next_match)
@@ -143,9 +148,9 @@ class ViSearch(sublime_plugin.TextCommand):
         try:
             SearchImpl(self.view, s, start_sel=self.original_sel).search()
             ex_commands.VintageExState.search_buffer_type = 'pattern_search'
-        except RuntimeError, e:
+        except RuntimeError as e:
             if 'parsing' in str(e):
-                print "VintageEx: Regex parsing error. Incomplete pattern: %s" % s
+                print("VintageEx: Regex parsing error. Incomplete pattern: %s" % s)
             else:
                 raise e
         self.original_sel = None
@@ -158,9 +163,9 @@ class ViSearch(sublime_plugin.TextCommand):
         try:
             SearchImpl(self.view, s, remember=False,
                        start_sel=self.original_sel).search()
-        except RuntimeError, e:
+        except RuntimeError as e:
             if 'parsing' in str(e):
-                print "VintageEx: Regex parsing error. Expected error." 
+                print("VintageEx: Regex parsing error. Expected error.") 
             else:
                 raise e
 

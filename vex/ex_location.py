@@ -1,6 +1,6 @@
 import sublime
 
-from ex_range import calculate_relative_ref
+from .ex_range import calculate_relative_ref
 
 def get_line_nr(view, point):
     """Return 1-based line number for `point`.

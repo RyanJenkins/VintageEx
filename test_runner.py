@@ -3,7 +3,7 @@ import sublime_plugin
 
 import os
 import unittest
-import StringIO
+import io
 
 
 TEST_DATA_FILE_BASENAME = 'vintageex_test_data.txt'
@@ -51,7 +51,7 @@ class VintageExRunSimpleTestsCommand(sublime_plugin.WindowCommand):
         return os.getcwd() == os.path.join(sublime.packages_path(), 'VintageEx')
 
     def run(self, suite_name):
-        bucket = StringIO.StringIO()
+        bucket = io.StringIO()
         _, suite = test_suites[suite_name]
         suite = unittest.defaultTestLoader.loadTestsFromName(suite)
         unittest.TextTestRunner(stream=bucket, verbosity=1).run(suite)
@@ -73,7 +73,7 @@ class TestDataDispatcher(sublime_plugin.EventListener):
             _, suite_name = test_suites[g_executing_test_suite]
             suite = unittest.TestLoader().loadTestsFromName(suite_name)
 
-            bucket = StringIO.StringIO()
+            bucket = io.StringIO()
             unittest.TextTestRunner(stream=bucket, verbosity=1).run(suite)
 
             v = print_to_view(view.window().new_file(), bucket.getvalue)

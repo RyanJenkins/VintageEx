@@ -1,12 +1,16 @@
 import sublime
 import sublime_plugin
 
+import sys, os
+print(os.path.dirname(__file__))
+sys.path.append(os.path.dirname(__file__))
+
 from vex.ex_command_parser import parse_command
 from vex.ex_command_parser import EX_COMMANDS
 from vex import ex_error
 
 
-COMPLETIONS = sorted([x[0] for x in EX_COMMANDS.keys()])
+COMPLETIONS = sorted([x[0] for x in list(EX_COMMANDS.keys())])
 
 EX_HISTORY_MAX_LENGTH = 20
 EX_HISTORY = {
@@ -48,7 +52,7 @@ class ViColonInput(sublime_plugin.WindowCommand):
         else:
             self.non_interactive = False
         ex_cmd = parse_command(cmd_line)
-        print ex_cmd
+        print(ex_cmd)
 
         if ex_cmd and ex_cmd.parse_errors:
             ex_error.display_error(ex_cmd.parse_errors[0])
@@ -87,7 +91,7 @@ class ExCompletionsProvider(sublime_plugin.EventListener):
 
         compls = [x for x in COMPLETIONS if x.startswith(prefix)]
         self.CACHED_COMPLETION_PREFIXES = [prefix] + compls
-        self.CACHED_COMPLETIONS = zip([prefix] + compls, compls + [prefix])
+        self.CACHED_COMPLETIONS = list(zip([prefix] + compls, compls + [prefix]))
         return self.CACHED_COMPLETIONS
 
 
